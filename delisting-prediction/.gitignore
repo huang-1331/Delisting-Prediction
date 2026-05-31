@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Data artifacts
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Reports generated during analysis
+reports/figures/*
+reports/monthly/*
+reports/final/*
+!reports/figures/.gitkeep
+!reports/monthly/.gitkeep
+!reports/final/.gitkeep
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+
