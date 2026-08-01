@@ -7,4 +7,5 @@ finance-datareader
 matplotlib
 seaborn
 jupyter
+lxml
 
