@@ -72,7 +72,7 @@ class DataCollectionTests(unittest.TestCase):
         self.assertEqual(client.calls, ["CFS", "OFS"])
         self.assertEqual(result.loc[0, "fs_div_used"], "OFS")
 
-    def test_history_keeps_only_kosdaq_manufacturing_common_equity(self) -> None:
+    def test_history_keeps_common_equity_candidates_with_industry_pending(self) -> None:
         current = pd.DataFrame(
             [
                 _listing_row(stock_code="1"),
@@ -95,7 +95,9 @@ class DataCollectionTests(unittest.TestCase):
 
         result = build_kosdaq_manufacturing_history(current, delisted)
 
-        self.assertEqual(set(result["stock_code"]), {"1", "3"})
+        self.assertEqual(set(result["stock_code"]), {"000001", "000002", "000003"})
+        self.assertTrue(result["manufacturing_confirmed"].isna().all())
+        self.assertFalse(result["final_sample_eligible"].any())
 
     def test_observation_must_fall_inside_listing_window(self) -> None:
         history = pd.DataFrame(

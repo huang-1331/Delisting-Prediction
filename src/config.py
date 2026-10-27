@@ -25,6 +25,16 @@ TARGET_COLUMN = "상장폐지_t12"
 STUDY_START_YEAR = 2015
 STUDY_END_YEAR = 2024
 ANNUAL_REPORT_CODE = "11011"
+COLLECTION_STATE_PATH = INTERIM_DATA_DIR / "collection_recollection_v2.sqlite3"
+COLLECTION_MAX_ATTEMPTS = 3
+COLLECTION_RETRY_SECONDS = 1.0
+MARKET_PROBE_STATE_PATH = INTERIM_DATA_DIR / "market_evidence_v1.sqlite3"
+
+# Research decision only: the existing src/altman.py still implements original Z.
+# TODO: implement Z-prime in a separately authorized modeling step.
+ALTMAN_VARIANT = "z_prime"
+ALTMAN_DISTRESS_CUTOFF = 1.23
+ALTMAN_GREY_UPPER_CUTOFF = 2.90
 
 
 @dataclass(frozen=True)

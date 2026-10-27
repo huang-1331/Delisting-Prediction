@@ -245,6 +245,17 @@ class DartApiClient:
         frame["collected_at_utc"] = _utc_timestamp()
         return frame
 
+    def fetch_document_archive(self, receipt_no: str) -> bytes:
+        """Return the official original document ZIP for an explicit receipt ID."""
+        if not str(receipt_no).isdigit() or len(str(receipt_no)) != 14:
+            raise ValueError("A 14-digit receipt number is required")
+        query = urlencode({"crtfc_key": self._api_key, "rcept_no": str(receipt_no)})
+        payload = _read_url_bytes(f"{DART_API_BASE_URL}/document.xml?{query}",
+                                  opener=self._opener, timeout=self._timeout)
+        if not payload.startswith(b"PK"):
+            raise ValueError("DART did not return a document archive")
+        return payload
+
     def fetch_disclosures(
         self,
         corp_code: str,
@@ -578,38 +589,123 @@ class KrxDataClient:
         frame["collected_at_utc"] = _utc_timestamp()
         return frame[STANDARD_LISTING_COLUMNS]
 
+    def fetch_daily_market(self, trade_date: date) -> pd.DataFrame:
+        """Fetch an official KOSDAQ daily snapshot with native prices and shares.
+
+        The MDCSTAT01501 contract was observed in the official MDCSTAT015.jsp
+        screen. Returned rows retain source keys, requested date and timestamp;
+        they do not establish that any firm's complete equity value is available.
+        """
+        if not self._authenticated:
+            self.authenticate()
+        result = self._request_json(KRX_DATA_URL, data={
+            "bld": "dbms/MDC/STAT/standard/MDCSTAT01501", "locale": "ko_KR",
+            "mktId": "KSQ", "trdDd": trade_date.strftime("%Y%m%d"),
+            "share": "1", "money": "1"},
+            referer="https://data.krx.co.kr/contents/MDC/STAT/standard/MDCSTAT015.jsp")
+        tables = [value for value in result.values() if isinstance(value, list)]
+        required = {"ISU_SRT_CD", "TDD_CLSPRC", "LIST_SHRS", "MKTCAP", "ACC_TRDVOL"}
+        valid = [pd.DataFrame(rows) for rows in tables if rows and required.issubset(rows[0])]
+        if len(valid) == 1:
+            frame = valid[0]
+        elif len(tables) == 1 and not tables[0]:
+            return pd.DataFrame()
+        else:
+            raise ValueError("KRX daily market contract not satisfied")
+        frame["requested_trade_date"] = trade_date.isoformat()
+        frame["source"] = "KRX MDCSTAT01501"
+        frame["collected_at_utc"] = _utc_timestamp()
+        return frame
+
+    def fetch_price_history(self, isin: str, start_date: date, end_date: date) -> pd.DataFrame:
+        """Fetch an ISIN's official daily history; retain raw source values.
+
+        Uses the observed MDCSTAT017 contract. Only trading dates and volume
+        are used for the freshness investigation until price-adjustment policy
+        is independently verified.
+        """
+        if not self._authenticated:
+            self.authenticate()
+        if start_date > end_date or not isin:
+            raise ValueError("Invalid historical request")
+        result = self._request_json(KRX_DATA_URL, data={
+            "bld": "dbms/MDC/STAT/standard/MDCSTAT01701", "locale": "ko_KR",
+            "isuCd": isin, "strtDd": start_date.strftime("%Y%m%d"),
+            "endDd": end_date.strftime("%Y%m%d"), "share": "1", "money": "1"},
+            referer="https://data.krx.co.kr/contents/MDC/STAT/standard/MDCSTAT017.jsp")
+        tables = [value for value in result.values() if isinstance(value, list)]
+        required = {"TRD_DD", "ACC_TRDVOL", "TDD_CLSPRC"}
+        valid = [pd.DataFrame(rows) for rows in tables if rows and required.issubset(rows[0])]
+        if len(valid) == 1:
+            frame = valid[0]
+        elif len(tables) == 1 and not tables[0]:
+            return pd.DataFrame()
+        else:
+            raise ValueError("KRX history contract not satisfied")
+        frame["source"] = "KRX MDCSTAT01701"
+        frame["collected_at_utc"] = _utc_timestamp()
+        frame["requested_isin"] = isin
+        frame["requested_start_date"] = start_date.isoformat()
+        frame["requested_end_date"] = end_date.isoformat()
+        frame["price_adjustment_status"] = "source_default_unverified"
+        return frame
+
 
 def build_kosdaq_manufacturing_history(
     current_listings: pd.DataFrame,
     delisted_issues: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Combine current and delisted official records into a firm history.
+    """Return identity-eligible collection candidates, not a final manufacturing sample.
 
-    The firm-level universe keeps common equity records whose KRX industry
-    label contains ``제조업``. Unknown or non-manufacturing industries are not
-    silently recoded.
+    Compatibility entry point: industry at T remains unknown until evidence is
+    reviewed. Use build_collection_candidates to retain excluded/review records.
     """
+    candidates = build_collection_candidates(current_listings, delisted_issues)
+    return candidates.loc[candidates["collection_status"].eq("ready")].reset_index(drop=True)
 
-    for name, frame in (
-        ("current listings", current_listings),
-        ("delisted issues", delisted_issues),
-    ):
+
+def build_collection_candidates(
+    current_listings: pd.DataFrame,
+    delisted_issues: pd.DataFrame,
+) -> pd.DataFrame:
+    """Preserve official rows and classify collection eligibility independently of industry.
+
+    Inputs are current and historical official listing tables. Output includes
+    ready, identity_review and excluded rows. Ready means KOSDAQ common equity
+    is established; it never means manufacturing at T has been established.
+    """
+    for name, frame in (("current", current_listings), ("delisted", delisted_issues)):
         _require_columns(frame, STANDARD_LISTING_COLUMNS, name)
-    combined = pd.concat([current_listings, delisted_issues], ignore_index=True)
-    common_equity = combined["stock_type"].fillna("보통주").eq("보통주")
-    is_kosdaq = combined["market"].astype("string").str.contains(
-        "코스닥|KOSDAQ", case=False, na=False
-    )
-    is_manufacturing = combined["industry"].astype("string").str.contains(
-        "제조업", na=False
-    )
-    result = combined.loc[common_equity & is_kosdaq & is_manufacturing].copy()
-    result = result.sort_values(
-        ["stock_code", "listing_date", "delisting_date"], na_position="last"
-    )
-    return result.drop_duplicates(
-        subset=["stock_code", "listing_date", "delisting_date"], keep="last"
-    ).reset_index(drop=True)
+    result = pd.concat([current_listings, delisted_issues], ignore_index=True).copy()
+    result["stock_code"] = _normalize_stock_codes(result["stock_code"])
+    for column in ("listing_date", "delisting_date"):
+        result[column] = pd.to_datetime(result[column], errors="raise")
+    # Keep distinct conflicting records for review instead of choosing a winner.
+    result = result.drop_duplicates(subset=[c for c in STANDARD_LISTING_COLUMNS if c != "collected_at_utc"])
+    market = result["market"].astype("string").str.strip()
+    security = result["security_type"].astype("string").str.strip()
+    stock_type = result["stock_type"].astype("string").str.strip()
+    kosdaq = market.str.fullmatch("코스닥|KOSDAQ", case=False, na=False)
+    known = market.notna() & market.ne("") & security.notna() & security.ne("") & stock_type.notna() & stock_type.ne("")
+    ready = kosdaq & security.eq("주권").fillna(False) & stock_type.eq("보통주").fillna(False)
+    result["collection_status"] = "identity_review"
+    excluded = ((market.notna() & market.ne("") & ~kosdaq)
+                | (security.notna() & security.ne("") & security.ne("주권"))
+                | (stock_type.notna() & stock_type.ne("") & stock_type.ne("보통주"))).fillna(False)
+    result.loc[excluded, "collection_status"] = "excluded"
+    result.loc[ready & known, "collection_status"] = "ready"
+    invalid = (~result["stock_code"].str.fullmatch(r"[0-9A-Za-z]{6}", na=False)
+               | result["listing_date"].isna()
+               | (result["delisting_date"].notna() & result["delisting_date"].le(result["listing_date"])))
+    result.loc[invalid & ~excluded, "collection_status"] = "identity_review"
+    keys = ["stock_code", "listing_date", "delisting_date"]
+    conflict = result.groupby(keys, dropna=False)[["market", "security_type", "stock_type"]].transform("nunique").gt(1).any(axis=1)
+    result.loc[conflict, "collection_status"] = "identity_review"
+    result["manufacturing_confirmed"] = pd.Series(pd.NA, index=result.index, dtype="Int8")
+    result["industry_verification_status"] = "pending_at_T"
+    result["final_sample_eligible"] = False
+    # TODO: consume reviewed firm-T evidence only after its schema is finalized.
+    return result.sort_values(keys, na_position="last").reset_index(drop=True)
 
 
 def filter_observations_to_listing_window(
@@ -688,7 +784,7 @@ def link_listing_history_to_dart_codes(
         .drop_duplicates("stock_code", keep=False)
         .set_index("stock_code")["corp_code"]
     )
-    history["corp_code"] = history["stock_code"].map(stock_map)
+    history["corp_code"] = history["stock_code"].map(stock_map).astype("string")
     history["corp_code_match_method"] = pd.Series(
         pd.NA, index=history.index, dtype="string"
     )
@@ -700,8 +796,12 @@ def link_listing_history_to_dart_codes(
         .set_index("_normalized_name")["corp_code"]
     )
     missing = history["corp_code"].isna()
-    history.loc[missing, "corp_code"] = history.loc[
-        missing, "_normalized_name"
+    ambiguous_codes = set(dart.loc[dart["stock_code"].ne("") & dart["stock_code"].notna()
+        & dart.duplicated("stock_code", keep=False), "stock_code"])
+    # An ambiguous code must not be silently resolved by falling back to a name.
+    name_allowed = missing & ~history["stock_code"].isin(ambiguous_codes)
+    history.loc[name_allowed, "corp_code"] = history.loc[
+        name_allowed, "_normalized_name"
     ].map(unique_name_map)
     name_matched = missing & history["corp_code"].notna()
     history.loc[name_matched, "corp_code_match_method"] = "company_name_exact"

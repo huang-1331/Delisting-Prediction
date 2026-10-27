@@ -13,10 +13,10 @@ where:
     X4 = Market Value of Equity / Total Liabilities
     X5 = Sales / Total Assets
 
-TODO:
-    Confirm whether the final study should use the original public
-    manufacturing formula, emerging-market variant, or a Korea-specific
-    adaptation.
+Study decision (2026-10-28): config.ALTMAN_VARIANT selects book-equity Z-prime.
+The functions below remain original-Z helpers and are not the chosen baseline.
+TODO: implement Z-prime in a later authorized modeling step; no training or
+formula migration is performed by changing the research configuration alone.
 """
 
 from __future__ import annotations
@@ -91,8 +91,8 @@ def classify_altman_zone(z_score: pd.Series) -> pd.Series:
         - 1.81 <= Z < 2.99: grey
         - Z >= 2.99: safe
 
-    TODO:
-        Confirm final cutoff policy for Korean KOSDAQ manufacturing firms.
+    This helper classifies the original formula only. The selected Z-prime
+    baseline uses different cutoffs and is not implemented by this function.
     """
 
     return pd.Series(
