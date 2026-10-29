@@ -59,3 +59,29 @@ def evaluate_binary_classifier(
         confusion_matrix=confusion_matrix(y_true, y_pred),
     )
 
+
+
+
+def evaluate_algorithm_scores(y_true, scores, threshold):
+    """Return JSON-compatible required metrics for caller-supplied binary labels.
+
+    Inputs are actual labels, finite scores in [0,1], and a frozen threshold.
+    Output includes a fixed 2x2 [normal, event] confusion matrix. No threshold
+    selection occurs here. Scores need not be calibrated event probabilities.
+    """
+    y = np.asarray(y_true)
+    p = np.asarray(scores, dtype=float)
+    if not len(y) or not np.isin(y, [0, 1]).all():
+        raise ValueError('Evaluation requires nonempty binary labels')
+    if len(y) != len(p) or not np.isfinite(p).all() or np.any((p < 0) | (p > 1)):
+        raise ValueError('Invalid evaluation scores')
+    decision = p >= threshold
+    result = evaluate_binary_classifier(y, decision, p)
+    cm = confusion_matrix(y, decision, labels=[0, 1])
+    tn, fp, fn, tp = cm.ravel()
+    return dict(n=len(y), recall=result.recall, precision=result.precision,
+                f1=result.f1, roc_auc=result.roc_auc, pr_auc=result.pr_auc,
+                confusion_matrix=cm.tolist(), tn=int(tn), fp=int(fp),
+                fn=int(fn), tp=int(tp), threshold=float(threshold),
+                false_positive_rate=float(fp/(tn+fp)) if tn+fp else None,
+                accuracy=float(np.mean(decision == y)))

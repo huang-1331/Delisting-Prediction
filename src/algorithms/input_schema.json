@@ -1,0 +1,263 @@
+{
+  "metadata": {
+    "corp_code": "기업 식별자(문자열)",
+    "anchor": "예측 기준일/시각(ISO 8601)",
+    "available_at": "사용한 모든 입력 중 가장 늦은 실제 공개일/시각",
+    "known_procedure_date": "이미 알려진 파산·회생·상장폐지 절차 공개일. 없으면 빈 값"
+  },
+  "target": "호출자가 지정한 0/1 미래 사건 라벨. 미확인·추적 미완료는 0으로 만들지 않음",
+  "pair_id": "알고리즘 1만 필수. 쌍마다 정상 1개/사건 1개",
+  "numeric_scale": "비율은 소수 비율(50%=0.5), 금액 기반 비율은 같은 통화·단위·별도/연결 기준. 시점 이후 정보를 사용하지 않음",
+  "features": [
+    {
+      "column": "impairment_ratio",
+      "name": "자본잠식률",
+      "formula": "1-equity/positive_capital"
+    },
+    {
+      "column": "debt_assets",
+      "name": "부채/자산",
+      "formula": "liabilities/assets"
+    },
+    {
+      "column": "current_ratio",
+      "name": "유동비율",
+      "formula": "current_assets/positive_current_liabilities"
+    },
+    {
+      "column": "roa_ttm",
+      "name": "총자산순이익률",
+      "formula": "net_income_ttm/assets"
+    },
+    {
+      "column": "operating_margin_ttm",
+      "name": "영업이익률",
+      "formula": "operating_income_ttm/positive_revenue_ttm"
+    },
+    {
+      "column": "retained_assets",
+      "name": "이익잉여금/자산",
+      "formula": "retained_earnings/assets"
+    },
+    {
+      "column": "loss_fraction_4q",
+      "name": "최근 4분기 적자 비율",
+      "formula": "mean(net_income_quarter<0,last4)"
+    },
+    {
+      "column": "equity_delta_4q_assets",
+      "name": "4분기 자본 변화/과거 자산",
+      "formula": "(equity[t]-equity[t-4])/assets[t-4]"
+    },
+    {
+      "column": "leverage_delta_4q",
+      "name": "4분기 부채비율 변화",
+      "formula": "debt_assets[t]-debt_assets[t-4]"
+    },
+    {
+      "column": "revenue_growth_4q",
+      "name": "대칭 매출 성장률",
+      "formula": "(revenue_ttm[t]-revenue_ttm[t-4])/(abs(current)+abs(prior))"
+    },
+    {
+      "column": "working_capital_assets",
+      "name": "운전자본/자산",
+      "formula": "(current_assets-current_liabilities)/assets"
+    },
+    {
+      "column": "current_assets_assets",
+      "name": "유동자산/자산",
+      "formula": "current_assets/assets"
+    },
+    {
+      "column": "current_liabilities_assets",
+      "name": "유동부채/자산",
+      "formula": "current_liabilities/assets"
+    },
+    {
+      "column": "noncurrent_liabilities_assets",
+      "name": "비유동부채/자산",
+      "formula": "(liabilities-current_liabilities)/assets"
+    },
+    {
+      "column": "noncurrent_assets_assets",
+      "name": "비유동자산/자산",
+      "formula": "(assets-current_assets)/assets"
+    },
+    {
+      "column": "retained_equity",
+      "name": "이익잉여금/양의 자본",
+      "formula": "retained_earnings/positive_equity"
+    },
+    {
+      "column": "equity_assets",
+      "name": "자기자본비율",
+      "formula": "equity/assets"
+    },
+    {
+      "column": "asset_turnover_ttm",
+      "name": "총자산회전율",
+      "formula": "revenue_ttm/assets"
+    },
+    {
+      "column": "net_margin_ttm",
+      "name": "순이익률",
+      "formula": "net_income_ttm/positive_revenue_ttm"
+    },
+    {
+      "column": "operating_roa_ttm",
+      "name": "영업이익/자산",
+      "formula": "operating_income_ttm/assets"
+    },
+    {
+      "column": "operating_income_liabilities",
+      "name": "영업이익/부채",
+      "formula": "operating_income_ttm/positive_liabilities"
+    },
+    {
+      "column": "net_income_liabilities",
+      "name": "순이익/부채",
+      "formula": "net_income_ttm/positive_liabilities"
+    },
+    {
+      "column": "roe_ttm",
+      "name": "양의 자본 기준 ROE",
+      "formula": "net_income_ttm/positive_equity"
+    },
+    {
+      "column": "current_liabilities_total",
+      "name": "유동부채/총부채",
+      "formula": "current_liabilities/positive_liabilities"
+    },
+    {
+      "column": "retained_capital",
+      "name": "이익잉여금/자본금",
+      "formula": "retained_earnings/positive_capital"
+    },
+    {
+      "column": "debt_assets_delta_1q",
+      "name": "debt_assets의 1분기 변화",
+      "formula": "debt_assets[t]-debt_assets[t-1]"
+    },
+    {
+      "column": "current_ratio_delta_1q",
+      "name": "current_ratio의 1분기 변화",
+      "formula": "current_ratio[t]-current_ratio[t-1]"
+    },
+    {
+      "column": "impairment_delta_1q",
+      "name": "impairment_ratio의 1분기 변화",
+      "formula": "impairment_ratio[t]-impairment_ratio[t-1]"
+    },
+    {
+      "column": "roa_delta_1q",
+      "name": "roa_ttm의 1분기 변화",
+      "formula": "roa_ttm[t]-roa_ttm[t-1]"
+    },
+    {
+      "column": "opmargin_delta_1q",
+      "name": "operating_margin_ttm의 1분기 변화",
+      "formula": "operating_margin_ttm[t]-operating_margin_ttm[t-1]"
+    },
+    {
+      "column": "assets_growth_4q",
+      "name": "assets 대칭 성장률",
+      "formula": "(assets[t]-assets[t-4])/(abs(current)+abs(prior))"
+    },
+    {
+      "column": "liabilities_growth_4q",
+      "name": "liabilities 대칭 성장률",
+      "formula": "(liabilities[t]-liabilities[t-4])/(abs(current)+abs(prior))"
+    },
+    {
+      "column": "current_assets_growth_4q",
+      "name": "current_assets 대칭 성장률",
+      "formula": "(current_assets[t]-current_assets[t-4])/(abs(current)+abs(prior))"
+    },
+    {
+      "column": "current_liabilities_growth_4q",
+      "name": "current_liabilities 대칭 성장률",
+      "formula": "(current_liabilities[t]-current_liabilities[t-4])/(abs(current)+abs(prior))"
+    },
+    {
+      "column": "net_income_trend_4q_assets",
+      "name": "순이익 변화/과거 자산",
+      "formula": "(net_income_ttm[t]-net_income_ttm[t-4])/assets[t-4]"
+    },
+    {
+      "column": "operating_income_trend_4q_assets",
+      "name": "영업이익 변화/과거 자산",
+      "formula": "(operating_income_ttm[t]-operating_income_ttm[t-4])/assets[t-4]"
+    },
+    {
+      "column": "wc_assets_delta_4q",
+      "name": "working_capital_assets의 4분기 변화",
+      "formula": "working_capital_assets[t]-working_capital_assets[t-4]"
+    },
+    {
+      "column": "retained_assets_delta_4q",
+      "name": "retained_assets의 4분기 변화",
+      "formula": "retained_assets[t]-retained_assets[t-4]"
+    },
+    {
+      "column": "current_ratio_delta_4q",
+      "name": "current_ratio의 4분기 변화",
+      "formula": "current_ratio[t]-current_ratio[t-4]"
+    },
+    {
+      "column": "opmargin_delta_4q",
+      "name": "operating_margin_ttm의 4분기 변화",
+      "formula": "operating_margin_ttm[t]-operating_margin_ttm[t-4]"
+    },
+    {
+      "column": "impairment_mean_4q",
+      "name": "impairment_ratio 4분기 평균",
+      "formula": "mean(impairment_ratio[t-3:t])"
+    },
+    {
+      "column": "current_ratio_mean_4q",
+      "name": "current_ratio 4분기 평균",
+      "formula": "mean(current_ratio[t-3:t])"
+    },
+    {
+      "column": "roa_mean_4q",
+      "name": "roa_ttm 4분기 평균",
+      "formula": "mean(roa_ttm[t-3:t])"
+    },
+    {
+      "column": "opmargin_mean_4q",
+      "name": "operating_margin_ttm 4분기 평균",
+      "formula": "mean(operating_margin_ttm[t-3:t])"
+    },
+    {
+      "column": "debt_assets_std_4q",
+      "name": "debt_assets 4분기 변동성",
+      "formula": "std_ddof0(debt_assets[t-3:t])"
+    },
+    {
+      "column": "current_ratio_std_4q",
+      "name": "current_ratio 4분기 변동성",
+      "formula": "std_ddof0(current_ratio[t-3:t])"
+    },
+    {
+      "column": "roa_std_4q",
+      "name": "roa_ttm 4분기 변동성",
+      "formula": "std_ddof0(roa_ttm[t-3:t])"
+    },
+    {
+      "column": "opmargin_std_4q",
+      "name": "operating_margin_ttm 4분기 변동성",
+      "formula": "std_ddof0(operating_margin_ttm[t-3:t])"
+    },
+    {
+      "column": "longest_loss_streak_4q",
+      "name": "최근 4분기 최장 연속 적자",
+      "formula": "longest run(net_income_quarter<0,last4)"
+    },
+    {
+      "column": "negative_operating_fraction_4q",
+      "name": "최근 4분기 영업적자 비율",
+      "formula": "mean(operating_income_quarter<0,last4)"
+    }
+  ]
+}

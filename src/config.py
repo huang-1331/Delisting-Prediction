@@ -60,3 +60,10 @@ def load_settings(required_dart_key: bool = False) -> Settings:
 
     return Settings(dart_api_key=get_dart_api_key(required=required_dart_key))
 
+
+
+# 기존 프로젝트 설정을 바꾸지 않는 알고리즘 이식 전용 설정.
+ALGORITHM_SEED = 20261028
+ALGORITHM2_MIN_RECALL = 0.50
+ALGORITHM2_WEIGHT_GRID = (0.0, 0.25, 0.5, 0.75, 1.0)
+ALGORITHM_C_GRID = (0.1, 1.0, 10.0)
