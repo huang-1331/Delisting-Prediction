@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -128,9 +129,23 @@ def extract_source_tables(payload: bytes, receipt: str, year: int) -> dict:
             "caption": caption, "periods": periods, "unit": unit,
             "xpath": tree.getroottree().getpath(group)})
     expected = {(scope, kind) for scope in ("CFS", "OFS") for kind in ("BS", "IS", "CF", "EF")}
-    if len(groups) != 8 or {(g["scope"], g["statement_type"]) for g in groups} != expected:
+    observed = {(g["scope"], g["statement_type"]) for g in groups}
+    scope_evidence = None
+    if len(groups) == 4 and observed == {("OFS", kind) for kind in ("BS", "IS", "CF", "EF")}:
+        scopes = [n.getparent() for n in tree.xpath("//title")
+                  if re.fullmatch(r"(?:\d+\.)?연결재무제표", re.sub(r"\s+", "", " ".join(n.itertext()))) ]
+        if len(scopes) == 1:
+            note = re.sub(r"\s+", " ", " ".join(scopes[0].itertext())).strip()
+            compact = re.sub(r"\s+", "", note).replace("&cr;", "")
+            if re.fullmatch(r"(?:\d+\.)?연결재무제표당사는해당사항없음", compact):
+                scope_evidence = {"kind": "explicit_CFS_not_applicable", "text": note,
+                    "xpath": tree.getroottree().getpath(scopes[0]),
+                    "text_sha256": hashlib.sha256(note.encode("utf-8")).hexdigest()}
+                expected = observed
+    if len(groups) != len(expected) or observed != expected:
         raise ValueError("Expected original financial statement scopes not fully present")
-    return {"cells": cells, "period_values": values, "groups": groups, "balance_checks": balances}
+    return {"cells": cells, "period_values": values, "groups": groups, "balance_checks": balances,
+            "scope_evidence": scope_evidence}
 
 
 def verify_recovery_manifest(path: Path, key: str) -> dict:
@@ -149,7 +164,18 @@ def verify_recovery_manifest(path: Path, key: str) -> dict:
     # Public dates come from verified source metadata, not identifier prefixes.
     date.fromisoformat(first["public_date"])
     groups = first.get("groups", [])
-    if len(groups) != 8 or any(g["periods"][0]["end_year"] != manifest["business_year"] for g in groups):
+    kinds = {"BS", "IS", "CF", "EF"}
+    expected = {(scope, kind) for scope in ("CFS", "OFS") for kind in kinds}
+    scope_evidence = first.get("scope_evidence")
+    if scope_evidence and scope_evidence.get("kind") == "explicit_CFS_not_applicable":
+        note = scope_evidence.get("text", "")
+        compact = re.sub(r"\s+", "", note).replace("&cr;", "")
+        if (not scope_evidence.get("xpath") or not re.fullmatch(r"(?:\d+\.)?연결재무제표당사는해당사항없음", compact)
+                or hashlib.sha256(note.encode("utf-8")).hexdigest() != scope_evidence.get("text_sha256")):
+            raise ValueError("OFS-only explicit scope evidence missing")
+        expected = {("OFS", kind) for kind in kinds}
+    if (len(groups) != len(expected) or {(g["scope"], g["statement_type"]) for g in groups} != expected
+            or any(g["periods"][0]["end_year"] != manifest["business_year"] for g in groups)):
         raise ValueError("Recovery source table periods not verified")
     for item in manifest["files"]:
         target = (PROJECT_ROOT / item["path"]).resolve()
@@ -157,7 +183,8 @@ def verify_recovery_manifest(path: Path, key: str) -> dict:
             raise ValueError("Recovery file outside source/evidence directories")
         if file_sha256(target) != item["sha256"]:
             raise ValueError("Recovery source or export hash changed")
-    if len(manifest.get("balance_checks", [])) != 6 or not all(x["assets_equal_liabilities_plus_equity"] for x in manifest["balance_checks"]):
+    expected_balances = sum(len(g["periods"]) for g in groups if g["statement_type"] == "BS")
+    if len(manifest.get("balance_checks", [])) != expected_balances or not all(x["assets_equal_liabilities_plus_equity"] for x in manifest["balance_checks"]):
         raise ValueError("Recovery balance verification missing")
     return manifest
 

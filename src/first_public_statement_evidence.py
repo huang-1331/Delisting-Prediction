@@ -91,6 +91,7 @@ def main() -> int:
                           for p in (path, cells, values, all_versions_path, reviewed_path)],
                 "sources": [{"receipt": receipt, "public_date": row.T,
                     "groups": parsed["groups"], "document": identity["member"],
+                    "scope_evidence": parsed["scope_evidence"],
                     "decoded_encoding": identity["decoded_encoding"]}],
                 "balance_checks": parsed["balance_checks"],
                 "source_scope_policy": "CFS preferred; OFS preserved separately, no mixing",

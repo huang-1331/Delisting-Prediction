@@ -2,6 +2,7 @@
 
 from datetime import date
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -35,6 +36,20 @@ def fixture() -> bytes:
 
 class StatementRecoveryTests(unittest.TestCase):
     """Test recovery invariants rather than recreating API output from later values."""
+
+    def test_OFS_fallback_requires_explicit_CFS_nonapplicability(self):
+        text = re.sub(r'<TABLE-GROUP ACLASS="\{XBRL\}[A-Z]+_C">.*?</TABLE-GROUP>', '', fixture().decode('utf-8'))
+        with self.assertRaises(ValueError):
+            extract_source_tables(text.encode('utf-8'), '20250324000028', 2024)
+        note = '<SECTION-2><TITLE>2. 연결재무제표</TITLE><P>당사는 해당 사항 없음</P></SECTION-2>'
+        explicit = text.replace('<DOCUMENT>', '<DOCUMENT>' + note)
+        parsed = extract_source_tables(explicit.encode('utf-8'), '20250324000028', 2024)
+        self.assertEqual({g['scope'] for g in parsed['groups']}, {'OFS'})
+        self.assertEqual(len(parsed['balance_checks']), 3)
+        self.assertEqual(parsed['scope_evidence']['kind'], 'explicit_CFS_not_applicable')
+        partial_CFS = explicit.replace('</DOCUMENT>', fixture().decode('utf-8').split('<DOCUMENT>')[1].split('</TABLE-GROUP>')[0] + '</TABLE-GROUP></DOCUMENT>')
+        with self.assertRaises(ValueError):
+            extract_source_tables(partial_CFS.encode('utf-8'), '20250324000028', 2024)
 
     def test_old_cp949_unsuffixed_tables_require_explicit_scope_heading(self):
         text = fixture().decode('utf-8').replace('_C', '')

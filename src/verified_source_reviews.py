@@ -25,6 +25,16 @@ from .industry_evidence import ksic_edition_at_T
 PAPER_RECEIPTS = {"20160330001400", "20170331004063", "20180402003753",
                   "20190401004363", "20200330003428"}
 SPAC_RECEIPTS = {"20190329000115", "20200325000219", "20210308000292"}
+# Individually read parent-company paragraphs. The 2020 S-Mark report discloses
+# production cessation and is deliberately outside this reviewed set.
+TEXTILE_REVIEW_PATHS = {
+    "20160330004289": "/html/body/document/section-1[2]/section-2[1]/p[2]",
+    "20170331004229": "/html/body/document/section-1[2]/section-2[1]/p[5]",
+    "20180402004048": "/html/body/document/section-1[2]/section-2[1]/p[2]",
+    "20190401004704": "/html/body/document/section-1[2]/section-2[1]/p[3]",
+}
+RETAIL_RECEIPTS = {"20160330001989", "20170330001791", "20180402003077",
+                   "20190401000873", "20200330002214", "20210317000112"}
 EXCHANGE_REVIEWS = {
     "033630": ("20150609000299", "2015-06-09"),
     "066270": ("20170207000165", "2017-02-07"),
@@ -83,6 +93,57 @@ def explicit_full_year_dates(text: str) -> set[str]:
     return found
 
 
+def additional_parent_reviews(queue: list[dict]) -> pd.DataFrame:
+    """Verify ten inspected parent-business assertions without extending to other T.
+
+    Some queue passages describe a nested subsidiary. The textile review uses
+    the individually inspected parent paragraph in the unchanged original XML.
+    """
+    reviewed = []
+    for row in queue:
+        receipt = row["receipt"]
+        if receipt not in set(TEXTILE_REVIEW_PATHS) | RETAIL_RECEIPTS:
+            continue
+        textile = receipt in TEXTILE_REVIEW_PATHS
+        expected = ("030270", "00100258") if textile else ("028150", "00207755")
+        if (row["stock_code"], row["corp_code"]) != expected or row["within_listing_interval"] is not True:
+            raise ValueError("Additional reviewed identity or listing interval changed")
+        path = PROJECT_ROOT / row["archive"]
+        if file_sha256(path) != row["archive_sha256"]:
+            raise ValueError("Additional reviewed original changed")
+        tree, member = source_tree(path, receipt)
+        identity = tree.xpath("//document-header/company-name[@aregcik] | //document/company-name[@aregcik]")
+        if len(identity) != 1 or identity[0].get("aregcik") != row["corp_code"]:
+            raise ValueError("Additional reviewed reporting entity changed")
+        if textile:
+            nodes = tree.xpath(TEXTILE_REVIEW_PATHS[receipt])
+            reason = "Parent major-business paragraph explicitly identifies textile-yarn manufacturing; subsidiary entertainment business is separate"
+        else:
+            nodes = [n for n in tree.xpath("//p")
+                     if "당사의사업부문은TV쇼핑,모바일쇼핑,인터넷쇼핑" in re.sub(r"\s+", "", " ".join(n.itertext()))]
+            reason = "Reporting company explicitly identifies its own principal business as online retail and mail-order shopping"
+        if len(nodes) != 1:
+            raise ValueError("Additional inspected parent paragraph not unique")
+        node = nodes[0]
+        text = re.sub(r"\s+", " ", " ".join(node.itertext())).strip()
+        compact = re.sub(r"\s+", "", text)
+        if textile and not ("주요사업의내용" in compact and "원사를전문으로제조하는기업입니다" in compact
+                            and ("당사는창사이래" in compact or "지배회사는창사이래" in compact)):
+            raise ValueError("Additional inspected parent manufacturing assertion missing")
+        reviewed.append({"corp_code": row["corp_code"], "stock_code": row["stock_code"],
+            "T": row["T"], "fiscal_year": row["fiscal_year"], "receipt_no": receipt,
+            "manufacturing_confirmed": int(textile), "ksic_edition": ksic_edition_at_T(row["T"]),
+            "ksic_section": "C" if textile else "not_C", "ksic_division": "13" if textile else "",
+            "review_status": "reviewed_original_business_statement", "reason": reason,
+            "source_url": f"https://dart.fss.or.kr/dsaf001/main.do?rcpNo={receipt}",
+            "source_path": row["archive"], "source_sha256": row["archive_sha256"],
+            "document": member, "xpath": tree.getroottree().getpath(node),
+            "source_text_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest()})
+    if len(reviewed) != 10:
+        raise ValueError("Additional fixed review set incomplete")
+    return pd.DataFrame(reviewed)
+
+
 def main() -> int:
     """Validate source hashes/identities and write reviewed facts, leaving labels untouched."""
     now = datetime.now(timezone(timedelta(hours=9)))
@@ -137,6 +198,8 @@ def main() -> int:
         baseline = pd.read_csv(baseline_path, dtype="string")
         baseline["ksic_edition"] = baseline["T"].map(ksic_edition_at_T)
         combined = combine_industry_reviews(baseline, new_industry)
+        additional = additional_parent_reviews(queue)
+        combined = combine_industry_reviews(combined, additional)
         industry_output = INTERIM_DATA_DIR / f"industry_review_combined_{stamp}.csv"
         combined.to_csv(industry_output, index=False, encoding="utf-8-sig")
 
@@ -223,8 +286,10 @@ def main() -> int:
         details.write_text(json.dumps(event_evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         reason_output = INTERIM_DATA_DIR / f"event_reason_context_review_{stamp}.csv"
         reasons.to_csv(reason_output, index=False, encoding="utf-8-sig")
-        result.update({"new_reviewed_industry_observations": 8, "new_manufacturing_observations": 5,
-            "new_nonmanufacturing_observations": 3, "combined_industry_observations": len(combined),
+        result.update({"new_reviewed_industry_observations": 18, "new_manufacturing_observations": 9,
+            "new_nonmanufacturing_observations": 9, "combined_industry_observations": len(combined),
+            "additional_parent_review_observations": len(additional),
+            "production_cessation_observations_not_auto_classified": ["20200330001636"],
             "industry_artifact": str(industry_output.relative_to(PROJECT_ROOT)),
             "industry_sha256": file_sha256(industry_output),
             "new_reviewed_competing_events": len(event_evidence),
