@@ -24,6 +24,13 @@ RANDOM_STATE = 42
 TARGET_COLUMN = "상장폐지_t12"
 STUDY_START_YEAR = 2015
 STUDY_END_YEAR = 2024
+
+# User: use the KSIC edition generally effective at prediction T.
+# Sources and the separate individual-law transition are in docs/ksic_at_T.md.
+KSIC_EDITION_STARTS = (("2008-02-01", 9), ("2017-07-01", 10), ("2024-07-01", 11))
+KSIC_MANUFACTURING_DIVISIONS = {9: (10, 33), 10: (10, 34), 11: (10, 34)}
+# User choice A on 2026-10-28; source completeness must be verified separately.
+EVENT_OBSERVATION_END = "2026-08-01"
 ANNUAL_REPORT_CODE = "11011"
 COLLECTION_STATE_PATH = INTERIM_DATA_DIR / "collection_recollection_v2.sqlite3"
 COLLECTION_MAX_ATTEMPTS = 3

@@ -12,7 +12,7 @@ from typing import Callable
 
 import pandas as pd
 
-from .config import ANNUAL_REPORT_CODE
+from .config import ANNUAL_REPORT_CODE, PROJECT_ROOT, INTERIM_DATA_DIR
 from .data_collection import DartApiError
 
 
@@ -41,7 +41,32 @@ class RequestStore:
         self.db.execute("CREATE TABLE IF NOT EXISTS requests (stage TEXT, request_key TEXT, status TEXT CHECK(status IN ('success','unavailable','failed')), attempts INTEGER, payload TEXT, error_code TEXT, provenance TEXT, updated_at TEXT, PRIMARY KEY(stage,request_key))")
         self.db.execute("CREATE TABLE IF NOT EXISTS migrations (path TEXT, sha256 TEXT, PRIMARY KEY(path,sha256))")
         self.db.execute("CREATE TABLE IF NOT EXISTS settings (name TEXT PRIMARY KEY, value TEXT)")
+        self.db.execute("CREATE TABLE IF NOT EXISTS original_recoveries (request_key TEXT PRIMARY KEY, manifest_path TEXT, manifest_sha256 TEXT, verified_at TEXT)")
         self.db.commit()
+
+    def register_original_recovery(self, key: str, manifest_path: Path) -> None:
+        """Record verified original tables separately; never overwrite an API failure."""
+        from .statement_recovery import verify_recovery_manifest
+        if not manifest_path.resolve().is_relative_to(INTERIM_DATA_DIR.resolve()):
+            raise ValueError("Recovery manifest must be inside interim evidence")
+        if self.status("statements", key) != "failed":
+            raise ValueError("Original recovery must not replace an API success or no-data result")
+        verify_recovery_manifest(manifest_path, key)
+        with self.db:
+            self.db.execute("INSERT OR REPLACE INTO original_recoveries VALUES (?,?,?,?)",
+                (key, manifest_path.relative_to(PROJECT_ROOT).as_posix(), file_sha256(manifest_path),
+                 datetime.now(timezone.utc).isoformat()))
+
+    def original_recovery(self, key: str) -> dict | None:
+        """Reuse an unchanged, verified source recovery while keeping API status intact."""
+        from .statement_recovery import verify_recovery_manifest
+        row = self.db.execute("SELECT manifest_path,manifest_sha256 FROM original_recoveries WHERE request_key=?", (key,)).fetchone()
+        if row is None:
+            return None
+        path = PROJECT_ROOT / row[0]
+        if file_sha256(path) != row[1]:
+            raise ValueError("Registered recovery manifest changed")
+        return verify_recovery_manifest(path, key)
 
     def close(self) -> None:
         """Close the database after all committed requests have been preserved."""
@@ -89,7 +114,7 @@ class RequestStore:
             except Exception as exc:
                 code = exc.status if isinstance(exc, DartApiError) else type(exc).__name__
                 # Do not save str(exc): HTTP errors may contain authentication queries.
-                status = "unavailable" if code == "013" else "failed"
+                status = "unavailable" if code in {"013", "014"} else "failed"
                 frame = pd.DataFrame()
             self._put(stage, key, status, frame, attempts, code, "live_request")
             self.db.commit()

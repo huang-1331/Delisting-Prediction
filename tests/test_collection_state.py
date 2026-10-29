@@ -193,6 +193,29 @@ class CollectionStateTests(unittest.TestCase):
         finally:
             clean.close()
 
+    def test_wrong_year_response_is_failed_without_coercing_future_values(self) -> None:
+        """A real observed API mismatch must never turn next-year data into this year."""
+        path = self.interim / "linked.csv"
+        pd.DataFrame({"corp_code": ["00123456"], "stock_code": ["000001"],
+            "collection_status": ["ready"], "corp_code_match_method": ["stock_code"]}).to_csv(path, index=False)
+        class Client:
+            def fetch_financial_statement(inner, corp, year, **kwargs):
+                return pd.DataFrame({"corp_code": [corp], "bsns_year": ["2025"],
+                    "reprt_code": ["11011"], "rcept_no": ["20260324000091"],
+                    "fs_div_used": ["CFS"], "thstrm_amount": ["123"]})
+        state = self.interim / "wrong_year.sqlite3"
+        result = run_batch(path, date(2026, 8, 1), "statements", NullLog(),
+            client=Client(), years=[2024], state_path=state, raw_dir=self.raw,
+            interim_dir=self.interim, max_attempts=1)
+        self.assertEqual((result.failed, result.success, result.rows), (1, 0, 0))
+        store = RequestStore(state)
+        try:
+            key = statement_key("00123456", "000001", 2024)
+            self.assertEqual(store.status("statements", key), "failed")
+            self.assertTrue(store.frame("statements", key).empty)
+        finally:
+            store.close()
+
 
 class CandidateTests(unittest.TestCase):
     """Verify no industry or security identity is silently inferred."""

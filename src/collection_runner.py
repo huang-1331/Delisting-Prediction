@@ -232,7 +232,7 @@ def collect_statements(linked_path: Path, as_of: date, log: ProgressLog, **optio
     """Collect unverified raw annual snapshots using transactional restart state."""
     from .reliable_collection import run_batch, CollectionIncomplete
     result = run_batch(linked_path, as_of, "statements", log, **options)
-    if result.failed:
+    if result.failed > result.recovered:
         raise CollectionIncomplete("Statement requests failed; retry on next run")
     return result.output
 
@@ -241,7 +241,7 @@ def collect_disclosures(linked_path: Path, as_of: date, log: ProgressLog, **opti
     """Collect receipt lists with range-aware request identity and safe retries."""
     from .reliable_collection import run_batch, CollectionIncomplete
     result = run_batch(linked_path, as_of, "disclosures", log, **options)
-    if result.failed:
+    if result.failed > result.recovered:
         raise CollectionIncomplete("Disclosure requests failed; retry on next run")
     return result.output
 

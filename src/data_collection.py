@@ -253,6 +253,14 @@ class DartApiClient:
         payload = _read_url_bytes(f"{DART_API_BASE_URL}/document.xml?{query}",
                                   opener=self._opener, timeout=self._timeout)
         if not payload.startswith(b"PK"):
+            # API errors arrive as XML even though successful responses are ZIPs.
+            # Retain only the documented status; do not print raw response text.
+            try:
+                status = ElementTree.fromstring(payload).findtext("status")
+            except ElementTree.ParseError:
+                status = None
+            if status:
+                raise DartApiError(status, "Original document request was not successful")
             raise ValueError("DART did not return a document archive")
         return payload
 
@@ -261,8 +269,13 @@ class DartApiClient:
         corp_code: str,
         start_date: date,
         end_date: date,
+        *,
+        disclosure_type: str | None = "A",
     ) -> pd.DataFrame:
-        """Collect all disclosure-list pages for one corporation and period."""
+        """Collect all pages; default A is periodic reports, None is all types."""
+
+        if disclosure_type is not None and disclosure_type not in tuple("ABCDEFGHIJ"):
+            raise ValueError("Unknown disclosure type")
 
         rows: list[dict[str, Any]] = []
         page_no = 1
@@ -273,7 +286,8 @@ class DartApiClient:
                     "corp_code": str(corp_code),
                     "bgn_de": start_date.strftime("%Y%m%d"),
                     "end_de": end_date.strftime("%Y%m%d"),
-                    "pblntf_ty": "A",
+                    **({"pblntf_ty": disclosure_type} if disclosure_type else {}),
+                    "last_reprt_at": "N",
                     "page_no": str(page_no),
                     "page_count": "100",
                 },

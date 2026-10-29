@@ -32,6 +32,7 @@ class BatchResult:
     skipped: int = 0
     requests: int = 0
     rows: int = 0
+    recovered: int = 0
 
 
 def run_batch(linked_path: Path, as_of: date, stage: str, log: Any, *,
@@ -84,6 +85,12 @@ def run_batch(linked_path: Path, as_of: date, stage: str, log: Any, *,
                     # Query semantics, not filename, determine whether a list is complete.
                     key = f"{row.corp_code}|{row.stock_code}|{STUDY_START_YEAR}-01-01|{as_of.isoformat()}|A"
                 active_keys.append(key)
+                if stage == "statements" and store.status(stage, key) == "failed" and store.original_recovery(key):
+                    result.failed += 1
+                    result.recovered += 1
+                    result.skipped += 1
+                    log.line("request_outcome=failed; verified_original_recovery=True; API_retry_skipped=True; source_tables_separate=True")
+                    continue
                 for attempt in range(max_attempts):
                     status_before = store.status(stage, key)
                     reusable = status_before == "success" or (status_before == "unavailable" and not retry_unavailable)
@@ -141,7 +148,7 @@ def run_batch(linked_path: Path, as_of: date, stage: str, log: Any, *,
     finally:
         try:
             result.rows = store.export(stage, active_keys, output)
-            log.line(f"batch_result success={result.success}; unavailable={result.unavailable}; failed={result.failed}; reused={result.skipped}; new_requests={result.requests}; rows={result.rows}")
+            log.line(f"batch_result success={result.success}; unavailable={result.unavailable}; failed={result.failed}; recovered_from_original={result.recovered}; reused={result.skipped}; new_requests={result.requests}; rows={result.rows}")
         finally:
             store.close()
     return result

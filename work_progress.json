@@ -1,16 +1,17 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-28T01:10:00+09:00",
+  "updated_at": "2026-10-29T11:18:25.683115+09:00",
   "deadline_kst": "",
   "scope": {
     "project": "C:\\Users\\vince\\OneDrive\\문서\\대학\\2026 평생멘토링\\Delisting-Prediction",
     "task": "Task 03 — Collect required evidence",
     "objective": "승인 연구의 재무·공시·사건·Altman 필수 시장자료를 재개 가능하게 수집하고 연도별 커버리지·누락·잔여량 검증",
-    "boundary": "최신 사용자 지시: B안 Z프라임 설정·문서반영 및 지금까지 변경사항의 GitHub main 반영만 수행. 다음 수집·계산구현·라벨·학습·Task04 진행 금지.",
+    "boundary": "Task03 업종·사유우선검증 계속. T업종72건·미분류사유30중29근거검토·확인된1기업5개T최초재무표검증. 대다수T/계정매핑미완료,Task04미실행.",
     "deadline_status": "2026-10-28 사용자 요청으로 48시간 고정 기한 제외. 과거 상대시간표는 계획 참고 이력만 보존.",
     "transition_reporting": "매 Task 종료·중단 시 목표대비결과·검증증거·남은문제·다음범위·진입가능/조건부/보류 판정을 안내하고 진행기록 보존. 다음단계에서 조사할 사실의 미확인과 현재단계 미완료를 구분.",
     "selected_altman_variant": "z_prime",
-    "research_execution_hold": "사용자가 설정만 요청함. 별도 재개 지시 전 후속 연구 작업 진행하지 않음."
+    "research_execution_hold": "Task03 진행중. 현재사용자선택대기없음,연구정의임의확정금지. Task04미실행.",
+    "event_observation_end": "2026-08-01"
   },
   "decisions": [
     {
@@ -107,6 +108,91 @@
       "at": "2026-10-28T01:10:00+09:00",
       "decision": "사용자가 B안Z프라임을 최종선택하고 설정만 반영·후속작업금지·현재변경사항 GitHub main 반영을 요청. 장부자본형 및 경계1.23 설정. 실제계산은원형만구현, Z프라임구현은후속.",
       "basis": "사용자 최신 지시; docs/research_decisions.md; src/config.py"
+    },
+    {
+      "at": "2026-10-28T20:31:07+09:00",
+      "decision": "작업 진행 지시로 Task03 재개. Task02 completed와 B안 Z프라임을 확인. 사건자료는 2026-08-01 스냅샷이며 관측종료일/갱신범위가 TODO여서 사용자 즉시중단 규칙에 따라 선택 전 중단. 기존 결정 재질문 아님.",
+      "basis": "사용자 작업 진행; AGENTS.md; docs/research_decisions.md; docs/methodology.md; docs/task03_collection.md"
+    },
+    {
+      "at": "2026-10-28T20:33:36+09:00",
+      "decision": "사용자 A 선택: 사건자료 관측종료일 2026-08-01 확정. 기존 스냅샷 원본 보존, 동일 기간 공식 자료와 완전성·일치 검증 후 과거 폐지기업 우선 수집. 미확정 사유를 추정하지 않음.",
+      "basis": "사용자 응답 a; 직전 A/B/C 선택지"
+    },
+    {
+      "at": "2026-10-28T21:07:44.110082+09:00",
+      "decision": "사건 관측종료일A를 적용해 공식 사건864행 일치와 원문2390건 무결성, 전체32검사를 검증. 실제 사유24건은 합병 완료가 아닌 심사서류 미제출 관련 문구로 기존 합병 키워드가 경쟁사건으로 오분류할 가능성을 확인해 모호성 즉시중단 지침 적용. 라벨규칙을 임의 변경하지 않고 진행 세션을 중단했다.",
+      "basis": "reports/monthly/task03_coverage_review_20261028_210312_935030.json; docs/task03_collection_status_20261028.md; 사용자 Task03 모호성 즉시 중단 지침"
+    },
+    {
+      "at": "2026-10-28T21:42:11.226398+09:00",
+      "decision": "사용자 B 선택: 대량 원자료 수집은 중단 유지하고 키워드 중첩24건의 공식 사건사유·기업유형·T업종 근거를 우선 검토한 뒤 판정규칙 수정안을 제시. 현행 라벨규칙 변경이나 Task04 실행 승인 아님.",
+      "basis": "사용자 응답 b; 직전 A/B 선택지"
+    },
+    {
+      "at": "2026-10-28T21:57:08.509266+09:00",
+      "decision": "사용자B에 따라24건 공식사유와64개T 사업보고서 원문을 검토. 24개회사64개T에서 합병준비만을 주된사업으로 하는 SPAC을 확인하여 기존 제조업 기준의 비제조업 판정근거 보존. 1개 원문은 동일 접수번호 공식화면으로 교차확인. 합병키워드 수정안 제시; 생산 라벨코드 미변경. B의 검토 후 수집재개 지시에 따라 Task03 본수집 재개.",
+      "basis": "reports/monthly/task03_spac_review_20261028_215543_916757.json; docs/spac_event_rule_proposal.md; 사용자B 선택에 대응한 직전 최종 답변의 검토 후 수집재개 경로"
+    },
+    {
+      "at": "2026-10-28T23:02:04.093362+09:00",
+      "decision": "B의24건 우선검토를 완료하고 수집재개. 전체2179기업 공시요청처리·19650사업보고서 버전목록확보. 재무7696성공/2920자료없음/1실패,원문10972성공/73자료없음까지검증. 2024요청에2025응답인1건을guard가차단하여 모호성 즉시중단 규칙으로 두수집세션중단. 연도강제수정·미래값성공저장하지않음. 실제2024최초·정정원문 확보상태 확인,복원은선택대기.",
+      "basis": "reports/monthly/task03_coverage_review_20261028_225604_705650.json; reports/monthly/task03_statement_identity_review_20261028_225439_512669.json; docs/task03_collection_status_20261028.md"
+    },
+    {
+      "at": "2026-10-28T23:04:08.709259+09:00",
+      "decision": "사용자A: 요청/응답연도불일치1건의 실제2024최초원문을 우선복원·검증하고 그후Task03수집재개. API실패와원문대체확보를별도보존,연도강제수정금지.",
+      "basis": "사용자 응답 a; 직전 A/B 선택지"
+    },
+    {
+      "at": "2026-10-28T23:16:23.860026+09:00",
+      "decision": "사용자A의2024최초원문 우선복원완료. 연결·별도8표/1315원문셀/555기간별셀씩최초·정정버전을별도보존,6개대차대조각각통과. T2025-03-24유지. API실패1+원문대체확보1분리,실제재시작API호출0·잘못된API행0 확인.39검사통과후Task03본수집재개. 계정매핑·모델학습·Task04미실행.",
+      "basis": "reports/monthly/task03_original_recovery_20261028_231346_514301.json; docs/original_statement_recovery.md; reports/monthly/task03_recovery_final_tests_20261028_231421.txt"
+    },
+    {
+      "at": "2026-10-29T09:02:43.591518+09:00",
+      "decision": "사용자 resume 지시로 Task03 중단점에서 재개. 이전 두 수집은 실제 출처 020으로 중단됐으며 해제시각을 가정하지 않음. 성공캐시와 원문복원1을 재검증·재사용하고 첫 필요한 요청에서 출처 상태 확인. Task04 미실행.",
+      "basis": "사용자 resume; task03_collection_20261028_231629_734846.json; task03_receipt_archives_20261028_231713_570630.json"
+    },
+    {
+      "at": "2026-10-29T10:06:12.102202+09:00",
+      "decision": "resume로 수집재개 후 모든 후보 요청처리완료·무결성감사통과. API성공14194/자료없음7595/API실패1(원문복원1)/미요청0, 원문19501성공/149자료없음. 최초제목후보 불일치 API접수3318을 확인해 최초공개수치로 자동사용하지 않음. 전체입력검증미완료이므로Task03 completed 금지, A/B검증순서선택대기.",
+      "basis": "reports/monthly/task03_coverage_review_20261029_100040_073378.json; reports/monthly/task03_resume_close_20261029_100612_102202.json; 사용자 모호성시 중단·선택지 지침"
+    },
+    {
+      "at": "2026-10-29T10:10:15.657921+09:00",
+      "decision": "사용자 A 선택: T시점 업종·폐지사유를 먼저 검증해 적격을 판정한 후 해당 기업 최초공시 수치 복원·검증. 승인 기준·미확정 사례 보존,Task03만 수행.",
+      "basis": "사용자 구조화 응답 A"
+    },
+    {
+      "at": "2026-10-29T10:12:04.553456+09:00",
+      "decision": "사용자A순서를적용하려고기준을점검했으나제조업분류표개정판정책은미확정TODO. T시점주된사업원칙과구분하여당시판/단일판선택전중단. 최초공시수치나제조업판정을임의확정하지않음.",
+      "basis": "reports/monthly/task03_A_definition_review_20261029_101204_553456.json; docs/methodology.md; 사용자 모호성즉시중단지침"
+    },
+    {
+      "at": "2026-10-29T10:20:52.655423+09:00",
+      "decision": "사용자 분류표 A 확정: T시점에 적용되던 KSIC판 사용, 개정차이 별도기록. 앞서 확정한 업종·사유 우선순서 A도 유지. 공식시행일/범위/경과규정 검증후기업별근거판정.",
+      "basis": "사용자 구조화 응답: T시점적용KSIC판 A"
+    },
+    {
+      "at": "2026-10-29T10:33:40.434287+09:00",
+      "decision": "당시KSIC판A를공식근거와코드에반영하고43검사통과. 과거기업우선원문추출중공시일1건불일치를발견해모호성중단지침적용. 실제공개일교차확인/격리경로선택전중단,날짜나업종라벨을임의확정안함.",
+      "basis": "reports/monthly/task03_ksic_review_20261029_103340_434287.json; 사용자 당시판A 및 모호성즉시중단지침"
+    },
+    {
+      "at": "2026-10-29T10:34:54.094758+09:00",
+      "decision": "사용자 날짜 A: 코엔텍20210316001238 실제공개일을 공식DART/KIND화면에서 우선교차확인한뒤 검증재개. 기존실제공개일T원칙유지,식별자앞자리로임의수정금지.",
+      "basis": "사용자 구조화응답 A"
+    },
+    {
+      "at": "2026-10-29T10:42:59.972519+09:00",
+      "decision": "날짜A에따라공식화면과목록을대조해T2021-03-17유지. 과도한식별자날짜동일성검증을수정하고Task03검증재개. 과거기업원문1768근거추출실패0·사유10기존범주대응검토·45검사통과. 최종업종/최초수치미완료이므로Task03 running,Task04미실행.",
+      "basis": "reports/monthly/task03_date_resume_review_20261029_104259_972519.json; reports/monthly/task03_public_date_review_20261029_103602_698923.json"
+    },
+    {
+      "at": "2026-10-29T11:18:25.683115+09:00",
+      "decision": "사용자 계속진행에따라Task03업종·사유검증과확인제조업최초표복원실행. ALL유형공시누락범위를별도수집해사유19건추가확인,8신규T업종기록. 제조업확인1기업5T최초표검증·재시작성공,50검사·전체감사통과. 전체T/계정매핑미완료이므로Task03 running·Task04미실행.",
+      "basis": "reports/monthly/task03_continue_review_20261029_111825_683115.json; docs/task03_input_review_20261029.md"
     }
   ],
   "tasks": [
@@ -658,7 +744,7 @@
     },
     {
       "id": "03",
-      "status": "pending",
+      "status": "running",
       "goal": "과거 폐지기업 우선으로 필수 근거를 수집하고 라벨 입력·연도별 커버리지·잔여 작업량 검증",
       "artifacts": [
         {
@@ -816,6 +902,486 @@
         {
           "path": "reports/monthly/prepush_tests_20261028_011000.txt",
           "evidence": "추가수집없는발행검증 직접로그. 기존27개단위/통합검사통과"
+        },
+        {
+          "path": "src/event_coverage_review.py",
+          "evidence": "공식 연도별 응답·상태/시각 보존과 기존 스냅샷 비교, 실행 전 단계"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_203843_474272.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_203843_474272.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_204028_998928.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_204028_998928.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_205503_727515.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_205503_727515.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "docs/task03_collection_status_20261028.md",
+          "evidence": "중단 후 수량·연도별상태·경과·잔여하한·선택지·재개절차. 원시 행 없음"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261028_210312_935030.json",
+          "evidence": "DB quick_check ok; 재무1276/1346/0/19168, 공시434/3/0/1742, 원문2390/17 검증"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261028_210312_935030.txt",
+          "evidence": "중단 후 검토 실제 stdout/stderr 동시 원문"
+        },
+        {
+          "path": "reports/monthly/task03_event_review_20261028_203538_116566.json",
+          "evidence": "공식12구간 재사용 및 기존864행 모든 비교필드 일치·원본보존"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_inventory_20261028_204138_976560.json",
+          "evidence": "과거기업 공시에서 실제사업보고서 버전2407·비12월31·제출기한 제목84 별도보존"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261028_204343_015156.json",
+          "evidence": "2407접수번호 처리,2390원문 해시/CRC,17파일없음,신규2387·재사용3"
+        },
+        {
+          "path": "reports/monthly/task03_final_tests_20261028_210307.txt",
+          "evidence": "전체32개 검사 통과 실제 동시로그"
+        },
+        {
+          "path": "reports/monthly/task03_interruption_checks_20261028_210543_089346.json",
+          "evidence": "기존원본6개 해시일치,변경소스15파일 실제비밀값0"
+        },
+        {
+          "path": "data\\interim\\event_keyword_overlap_review_20261028_210312_935030.csv",
+          "evidence": "사유키워드 중첩24건 검토목록; 경쟁사건 확정아님"
+        },
+        {
+          "path": "src/task03_collect.py",
+          "evidence": "25기업 단위 원자료 수집·실제HTTP계수/간격·출처오류 중단·안정상태·부분실행저장"
+        },
+        {
+          "path": "src/annual_receipt_inventory.py",
+          "evidence": "사업연도/결산월·접수번호·최초제목후보/정정본 보존,최초값 검증상태False"
+        },
+        {
+          "path": "src/receipt_archive_collection.py",
+          "evidence": "접수번호별 실제 ZIP 저장·해시/CRC 재사용·원본충돌 보존·파일없음 분리"
+        },
+        {
+          "path": "src/task03_coverage_review.py",
+          "evidence": "외부요청없이 실제상태/연도별수량·원문재검사·키워드중첩 집계"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_203843_474272.json",
+          "evidence": "실제 배치 집계. 마지막 두 실행은 중단 이력으로 전체 정상완료 주장의 근거가 아님"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_203843_474272.txt",
+          "evidence": "수집 실행 stdout/stderr 동시 저장. 중단된 실행의 부분로그 보존"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_204028_998928.json",
+          "evidence": "실제 배치 집계. 마지막 두 실행은 중단 이력으로 전체 정상완료 주장의 근거가 아님"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_204028_998928.txt",
+          "evidence": "수집 실행 stdout/stderr 동시 저장. 중단된 실행의 부분로그 보존"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_205503_727515.json",
+          "evidence": "실제 배치 집계. 마지막 두 실행은 중단 이력으로 전체 정상완료 주장의 근거가 아님"
+        },
+        {
+          "path": "reports/monthly/task03_collection_20261028_205503_727515.txt",
+          "evidence": "수집 실행 stdout/stderr 동시 저장. 중단된 실행의 부분로그 보존"
+        },
+        {
+          "path": "reports/monthly/task03_spac_review_20261028_215543_916757.json",
+          "evidence": "24개회사·64개T 공식근거 일치 및 비제조업 사실검토 기록"
+        },
+        {
+          "path": "reports/monthly/task03_spac_review_20261028_215543_916757.txt",
+          "evidence": "실제 원문검토 stdout/stderr 동시로그"
+        },
+        {
+          "path": "data\\interim\\industry_review_spac_20261028_215543_916757.csv",
+          "evidence": "검토한64개T의 업종0·판정근거·출처해시; 이벤트라벨0 아님"
+        },
+        {
+          "path": "docs/spac_event_rule_proposal.md",
+          "evidence": "구체적 문맥분리·업종선행·미확정NA 수정안; 적용전"
+        },
+        {
+          "path": "src/spac_event_review.py",
+          "evidence": "접수번호별 원문·공개시점과 주된사업 검토, 공식화면교차확인, 검토사실 보존"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_215722_147659.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_215722_147659.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261028_225604_705650.json",
+          "evidence": "중단후재무7696/2920/1/11173,공시2169/10/0/0,원문10972/73/0/8605; DBok·64T업종검증"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261028_225604_705650.txt",
+          "evidence": "중단후 검토 실제stdout/stderr 동시원문"
+        },
+        {
+          "path": "reports/monthly/task03_statement_identity_review_20261028_225439_512669.json",
+          "evidence": "2024요청/2025응답120행의식별값·격리원본경로/해시 직접확인"
+        },
+        {
+          "path": "reports/monthly/task03_statement_identity_review_20261028_225439_512669.txt",
+          "evidence": "실제단일요청 검증원문,금융수치/인증값출력없음"
+        },
+        {
+          "path": "data/raw/statement_identity_review_00442455_082660_2024_20261028_225439_512669.csv",
+          "evidence": "반환연도가2025인문제응답격리; 2024성공으로미편입"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_inventory_20261028_221412_902090.json",
+          "evidence": "2179기업공시목록요청완료,19650사업보고서버전,중복0,연장신고240분리"
+        },
+        {
+          "path": "data/interim/annual_receipt_versions_20261028_221412_902090.csv",
+          "evidence": "원문수집대상전체접수번호목록;최초/정정·결산월보존"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261028_221534_345385.txt",
+          "evidence": "전체manifest원문실제수집중단로그;기존성공재사용·파일없음분리"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261028_221534_345385.json",
+          "evidence": "중단직전저장부분집계;정상완료아님"
+        },
+        {
+          "path": "reports/monthly/task03_year_mismatch_tests_20261028_225902.txt",
+          "evidence": "잘못된연도강제변환방지 포함전체36검사통과"
+        },
+        {
+          "path": "reports/monthly/task03_spac_review_20261028_215832_963667.json",
+          "evidence": "24개SPAC64개T근거검토·비제조업사실기록,원문해시·날짜교차확인"
+        },
+        {
+          "path": "data\\interim\\industry_review_spac_20261028_215832_963667.csv",
+          "evidence": "문서와XPath출처경로 정합성 보완한64개T비제조업 사실표"
+        },
+        {
+          "path": "reports\\monthly\\task03_B_final_checks_20261028_230227_476426.json",
+          "evidence": "기존원본6개해시동일·변경소스비밀값0·원자료/인증파일공개후보0 직접검증"
+        },
+        {
+          "path": "docs/original_statement_recovery.md",
+          "evidence": "사용자A실제복원결과·상태분리·재개검증·범위한계"
+        },
+        {
+          "path": "reports/monthly/task03_original_recovery_20261028_231346_514301.json",
+          "evidence": "실제최초/정정8표각각복원·6대차대조·API실패보존·재시작0호출검증"
+        },
+        {
+          "path": "reports/monthly/task03_original_recovery_20261028_231346_514301.txt",
+          "evidence": "복원코드실제stdout/stderr 동시원문"
+        },
+        {
+          "path": "data\\interim\\original_recovery_manifest_00442455_2024_20261028_231346_514301.json",
+          "evidence": "검증원문·추출파일·해시·원문공개일T·회계범위·기간열보존"
+        },
+        {
+          "path": "reports/monthly/task03_recovery_final_tests_20261028_231421.txt",
+          "evidence": "오류연도·대차오류·원문변경차단·재시작 상태분리 등39개검사통과"
+        },
+        {
+          "path": "src/statement_recovery.py",
+          "evidence": "원문표·문자열셀·검증기간열복원,계정ID추정없음;API실패와별도등록"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_231629_734846.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261028_231629_734846.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261029_090151_503306.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261029_090151_503306.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261029_090520_823752.json",
+          "evidence": "본수집 실제 실행의 배치 집계·물리 요청 수·잔여 상태. 원시 데이터 없음."
+        },
+        {
+          "path": "reports\\monthly\\task03_collection_20261029_090520_823752.txt",
+          "evidence": "실행 stdout/stderr 동시 저장 원문"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261029_091127_580828.json",
+          "evidence": "실제 전체19650접수 요청처리,19501원문 SHA/CRC 검증,149자료없음,실패0·미요청0. 최초제목후보15002원문모두성공;최초수치검증과구분."
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261029_091127_580828.txt",
+          "evidence": "실제 전체19650접수 요청처리,19501원문 SHA/CRC 검증,149자료없음,실패0·미요청0. 최초제목후보15002원문모두성공;최초수치검증과구분."
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261029_100040_073378.json",
+          "evidence": "전체상태·연도별커버리지·원문해시/CRC·복원등록·사건근거 실제종료감사"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261029_100040_073378.txt",
+          "evidence": "전체상태·연도별커버리지·원문해시/CRC·복원등록·사건근거 실제종료감사"
+        },
+        {
+          "path": "reports/monthly/task03_resume_close_20261029_100612_102202.json",
+          "evidence": "실제종료검증 assertions 통과·Task03미완료/Task04미실행"
+        },
+        {
+          "path": "reports/monthly/task03_resume_close_20261029_100612_102202.txt",
+          "evidence": "실제종료검증 assertions 통과·Task03미완료/Task04미실행"
+        },
+        {
+          "path": "reports/monthly/task03_resume_safety_20261029_090622_465603.json",
+          "evidence": "기존원본6개SHA동일·변경파일비밀값0·민감공개후보0"
+        },
+        {
+          "path": "reports/monthly/task03_resume_safety_20261029_090622_465603.txt",
+          "evidence": "기존원본6개SHA동일·변경파일비밀값0·민감공개후보0"
+        },
+        {
+          "path": "docs/task03_collection_status_20261029.md",
+          "evidence": "최신상태·연도별표·경과·잔여검증·A/B재개경로"
+        },
+        {
+          "path": "reports/monthly/task03_A_definition_review_20261029_101204_553456.json",
+          "evidence": "A순서착수·분류표정책TODO확인·미분류30행과최초후보중복0실제점검;신규판정/복원0"
+        },
+        {
+          "path": "reports/monthly/task03_A_definition_review_20261029_101204_553456.txt",
+          "evidence": "A순서착수·분류표정책TODO확인·미분류30행과최초후보중복0실제점검;신규판정/복원0"
+        },
+        {
+          "path": "reports/monthly/task03_ksic_review_20261029_103340_434287.json",
+          "evidence": "KSIC공식근거·날짜사례·부분실행상태·원본/비밀점검"
+        },
+        {
+          "path": "reports/monthly/task03_ksic_review_20261029_103340_434287.txt",
+          "evidence": "실제점검stdout/stderr동시로그"
+        },
+        {
+          "path": "docs/ksic_at_T.md",
+          "evidence": "확정분류표정책·공식시행일/C범위·개정차이·한계"
+        },
+        {
+          "path": "src/industry_evidence.py",
+          "evidence": "T기준판조회·엄격문자해석·보고법인식별·과거기업우선근거추출checkpoint,자동업종판정없음"
+        },
+        {
+          "path": "tests/test_industry_evidence.py",
+          "evidence": "시행일경계/범위변화/CP949/ZIP슬래시/법인식별/중복주문서차단"
+        },
+        {
+          "path": "reports/monthly/task03_industry_tests_20261029_103148_836498.txt",
+          "evidence": "전체43검사통과와실제3원문헤더보완확인"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_102802_035081.json",
+          "evidence": "중단된직접추출실행집계;전체성공주장안함"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_102802_035081.txt",
+          "evidence": "중단전실제stdout/stderr동시로그"
+        },
+        {
+          "path": "data/interim/industry_evidence_v1.sqlite3",
+          "evidence": "83추출성공/28실패checkpoint,최종업종판정아님"
+        },
+        {
+          "path": "reports/monthly/task03_public_date_review_20261029_103602_698923.json",
+          "evidence": "DART공식제목/선택접수·공시목록일자일치검증"
+        },
+        {
+          "path": "reports/monthly/task03_public_date_review_20261029_103602_698923.txt",
+          "evidence": "DART공식제목/선택접수·공시목록일자일치검증"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_103604_748254.json",
+          "evidence": "과거기업1768원문정상실행·실패0·검토큐생성"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_103604_748254.txt",
+          "evidence": "과거기업1768원문정상실행·실패0·검토큐생성"
+        },
+        {
+          "path": "reports/monthly/task03_event_reason_review_20261029_103743_040497.json",
+          "evidence": "기존사유범주대응10건검토·미확정20NA보존·생산분류기불변"
+        },
+        {
+          "path": "reports/monthly/task03_event_reason_review_20261029_103743_040497.txt",
+          "evidence": "기존사유범주대응10건검토·미확정20NA보존·생산분류기불변"
+        },
+        {
+          "path": "reports/monthly/task03_date_resume_review_20261029_104259_972519.json",
+          "evidence": "종료점검·무결성·비밀값0·Task03진행중/Task04미실행"
+        },
+        {
+          "path": "reports/monthly/task03_date_resume_review_20261029_104259_972519.txt",
+          "evidence": "종료점검·무결성·비밀값0·Task03진행중/Task04미실행"
+        },
+        {
+          "path": "reports/monthly/task03_date_reason_tests_20261029_104054_623274.txt",
+          "evidence": "전체45검사통과·기존원문복원T불변재검증"
+        },
+        {
+          "path": "data/interim/industry_evidence_queue_20261029_103604_748254.jsonl",
+          "evidence": "1768개T후보근거·원문해시/XPath·적용KSIC판·상장기간·날짜진단플래그보존,최종업종판정아님"
+        },
+        {
+          "path": "data/interim/event_reason_review_20261029_103743_040497.csv",
+          "evidence": "30건기존미분류의사유검토근거표;10기존범주대응/20미확정,타겟라벨아님"
+        },
+        {
+          "path": "src/event_reason_review.py",
+          "evidence": "확인된공식문구의기존승인범주대응을별도검토표로기록,생산분류기변경없음"
+        },
+        {
+          "path": "docs/task03_input_review_20261029.md",
+          "evidence": "이번진행의실행/검증구분·정량상태·공식출처·잔여작업"
+        },
+        {
+          "path": "reports/monthly/task03_continue_review_20261029_111825_683115.json",
+          "evidence": "원본·비밀·재시작·신규근거의실제종료검증"
+        },
+        {
+          "path": "reports/monthly/task03_continue_review_20261029_111825_683115.txt",
+          "evidence": "원본·비밀·재시작·신규근거의실제종료검증"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261029_110918_945814.json",
+          "evidence": "전체커버리지재검증·업종72T·사유10/19/1검토표확인"
+        },
+        {
+          "path": "reports/monthly/task03_coverage_review_20261029_110918_945814.txt",
+          "evidence": "전체커버리지재검증·업종72T·사유10/19/1검토표확인"
+        },
+        {
+          "path": "reports/monthly/task03_verified_reviews_20261029_111143_000992.json",
+          "evidence": "8신규업종T와19경쟁사건의개별검토근거·기존64합본"
+        },
+        {
+          "path": "reports/monthly/task03_verified_reviews_20261029_111143_000992.txt",
+          "evidence": "8신규업종T와19경쟁사건의개별검토근거·기존64합본"
+        },
+        {
+          "path": "reports/monthly/task03_event_context_20261029_104848_299599.json",
+          "evidence": "전체유형20기업신규실행36HTTP·2753공시"
+        },
+        {
+          "path": "reports/monthly/task03_event_context_20261029_104848_299599.txt",
+          "evidence": "전체유형20기업신규실행36HTTP·2753공시"
+        },
+        {
+          "path": "reports/monthly/task03_event_context_20261029_111140_729738.json",
+          "evidence": "전체유형20성공재사용·HTTP0·0.153초재시작검증"
+        },
+        {
+          "path": "reports/monthly/task03_event_context_20261029_111140_729738.txt",
+          "evidence": "전체유형20성공재사용·HTTP0·0.153초재시작검증"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261029_105040_540660.json",
+          "evidence": "추가접수46원문실행44성공/2자료없음/0실패"
+        },
+        {
+          "path": "reports/monthly/task03_receipt_archives_20261029_105040_540660.txt",
+          "evidence": "추가접수46원문실행44성공/2자료없음/0실패"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_104859_207776.json",
+          "evidence": "양식보완후1716문단·1768원문추출실패0"
+        },
+        {
+          "path": "reports/monthly/task03_industry_evidence_20261029_104859_207776.txt",
+          "evidence": "양식보완후1716문단·1768원문추출실패0"
+        },
+        {
+          "path": "reports/monthly/task03_first_public_tables_20261029_110701_227419.json",
+          "evidence": "제조업확인1기업5T최초원문40표·대차30검증"
+        },
+        {
+          "path": "reports/monthly/task03_first_public_tables_20261029_110701_227419.txt",
+          "evidence": "제조업확인1기업5T최초원문40표·대차30검증"
+        },
+        {
+          "path": "reports/monthly/task03_first_public_tables_20261029_110837_998422.json",
+          "evidence": "5T최초표재사용·신규0·API상태불변"
+        },
+        {
+          "path": "reports/monthly/task03_first_public_tables_20261029_110837_998422.txt",
+          "evidence": "5T최초표재사용·신규0·API상태불변"
+        },
+        {
+          "path": "reports/monthly/task03_continue_final_tests_20261029_111445_774607.txt",
+          "evidence": "최종전체50검사통과"
+        },
+        {
+          "path": "data/interim/industry_review_combined_20261029_111143_000992.csv",
+          "evidence": "중복없는검토업종72개T근거합본"
+        },
+        {
+          "path": "data/interim/event_reason_context_review_20261029_111143_000992.csv",
+          "evidence": "기존미분류30건의검토사유10/19/1·타겟라벨아님"
+        },
+        {
+          "path": "src/event_context_collection.py",
+          "evidence": "별도ALL키/상태로사건맥락목록수집·성공재사용"
+        },
+        {
+          "path": "src/verified_source_reviews.py",
+          "evidence": "고정개별검토범위의원문근거/식별/해시검증기록·일반키워드분류아님"
+        },
+        {
+          "path": "src/first_public_statement_evidence.py",
+          "evidence": "확인제조업T의최초표검증과수치파일분리·계정매핑pending·재시작검증"
+        },
+        {
+          "path": "data/interim/first_public_manifest_20160330001400_20261029_110701_227419.json",
+          "evidence": "최초표원문·수치파일·단위/기간·공개일·6대차검증·해시manifest,모델준비False"
+        },
+        {
+          "path": "data/interim/first_public_manifest_20170331004063_20261029_110701_227419.json",
+          "evidence": "최초표원문·수치파일·단위/기간·공개일·6대차검증·해시manifest,모델준비False"
+        },
+        {
+          "path": "data/interim/first_public_manifest_20180402003753_20261029_110701_227419.json",
+          "evidence": "최초표원문·수치파일·단위/기간·공개일·6대차검증·해시manifest,모델준비False"
+        },
+        {
+          "path": "data/interim/first_public_manifest_20190401004363_20261029_110701_227419.json",
+          "evidence": "최초표원문·수치파일·단위/기간·공개일·6대차검증·해시manifest,모델준비False"
+        },
+        {
+          "path": "data/interim/first_public_manifest_20200330003428_20261029_110701_227419.json",
+          "evidence": "최초표원문·수치파일·단위/기간·공개일·6대차검증·해시manifest,모델준비False"
         }
       ],
       "checks": [
@@ -902,6 +1468,82 @@
         {
           "name": "변경 발행 준비",
           "result": "GitHub연결에서 huang-1331/Delisting-Prediction·main·push권한확인, 원격기준ccd8710와로컬HEAD일치. 비밀/원자료제외와27검사통과. commit/push는검증후수행예정"
+        },
+        {
+          "name": "재개 선행조건 및 차단점 확인",
+          "result": "Task02 completed, Z프라임 확정, 최초본 원칙 유지. 사건 관측종료일은 미확정이며 보유 사건 스냅샷은 2026-08-01. 이번 재개에서 새 외부요청0, 학습0, Task04 미실행. git status --short 빈 출력 확인."
+        },
+        {
+          "name": "A 사건범위 실제검증",
+          "result": "2015~2026-08-01 공식12구간864행이 원본과 일치. 비교용 빈문자열/CSV결측 표기차이는 수정했고 원본은 보존."
+        },
+        {
+          "name": "중단 후 실제 커버리지",
+          "result": "재무회사연도2622요청=성공1276/자료없음1346/실패0,미요청19168. 공시437기업=성공434/자료없음3/실패0,미요청1742. source snapshot일치·원문2390 CRC/해시·DBquick_check ok."
+        },
+        {
+          "name": "미확정·라벨입력",
+          "result": "일반미분류30과 별개로 심사서류미제출 관련24건에 부실/합병키워드 중첩. 실제경쟁사건미확정. 최초수치·T업종·회계매핑·라벨완료0,Task04미실행."
+        },
+        {
+          "name": "실행시간·잔여",
+          "result": "완료공시94.03초·원문650.897초,중단재무 마지막배치1054.947초·공시186.01초는 최소확인경과. 잔여재무19168요청은 간격만약80분+통신/추가원문/검증. 전체완료시각 추정불가,표본축소없음."
+        },
+        {
+          "name": "최종 검증·원본·비밀",
+          "result": "실제32검사통과. 최초감사대비 기존6원본해시 동일,검사당시 변경소스15파일 비밀값0. 기존 API성공과 원문성공3건 재사용; 중단 후 새API요청0."
+        },
+        {
+          "name": "B 24건 우선 공식근거 검토",
+          "result": "24개기업 DART고유번호·공시접수번호·공개일·상장기간·64원문 해시/CRC 확인. 63원문 직접 및1동일접수번호 공식화면에서 SPAC 유일사업목적 확인. 64개T 비제조업. 최초재무수치/전체업종/전체라벨 완료아님."
+        },
+        {
+          "name": "B검토후 재개·전체공시목록",
+          "result": "공시2179기업요청=성공2169/자료없음10/실패0. 연구기간사업보고서접수19650건 중복0. 연장신고240은별도보존. 원문360건은비12월결산으로 연구연도매핑/원자료검토대상보존."
+        },
+        {
+          "name": "중단후 최종저장소대조",
+          "result": "재무7696성공/2920자료없음/1실패/11173미요청. 원문10972성공/73자료없음/8605미요청. 두DBquick_check ok. 감사는API새호출없이수행. 최신집계는부분실행파일보다요청별DB를우선."
+        },
+        {
+          "name": "실제연도불일치 차단",
+          "result": "00442455/082660/2024요청에bsns_year2025·rcept20260324000091,120행반환. 3회실패기록과단일재확인일치. 요청연도로값변경안함,성공0으로격리.2024원문접수20250324000028및정정20250409002838확보확인,본문복원미실행."
+        },
+        {
+          "name": "최종 검사",
+          "result": "실제API의오류형태를회귀검사로추가,전체36검사통과. 생산라벨규칙은미변경,전체최초수치/라벨검증미완료,Task04미실행."
+        },
+        {
+          "name": "중단후원본·비밀·출판제외확인",
+          "result": "원본6파일변경없음=True;검사소스21파일실제비밀값=0;원자료/인증파일공개후보=0. Git commit/push미실행."
+        },
+        {
+          "name": "A 최초원문 복원과실제재개검증",
+          "result": "API실패1유지,최초T2025-03-24/접수20250324000028,정정20250409002838별도. 각8표/1315셀/555기간값·6대차대조통과. 동일위치재무셀차이0,정정값소급미사용. 저장소재시작신규API0·원문재사용1·잘못된API출력0.39검사통과."
+        },
+        {
+          "name": "2026-10-29 전체 원문 요청처리",
+          "result": "19650=성공19501+자료없음149,실패0·미요청0.149건 모두정정/첨부;최초제목후보15002건모두원문확보. DB quick_check ok. RemoteDisconnected1재시도해소. 재무수집계속,Task03완료아님."
+        },
+        {
+          "name": "2026-10-29 재개 종료감사",
+          "result": "재무14194성공/7595자료없음/1실패(검증원문대체1)/0미요청;공시2169성공/10자료없음/0실패/0미요청;원문19501성공/149자료없음/0실패/0미요청. 두DB ok,원문해시/CRC통과,최초제목후보15002모두원문확보. API접수10876일치/3318불일치,어느쪽도최초수치전체검증완료로간주안함. 최종라벨검증0;Task04실행0."
+        },
+        {
+          "name": "A순서 착수·정의 검토",
+          "result": "AGENTS/방법론/연구결정/기존코드검토. 업종분류표정책미정발견후기업판정전중단. 미분류사유30행보존;최초후보15002접수2068기업·기업연도월중복0. 생산코드/사유규칙/라벨변경0,재무복원0,새검사실행0,Task04실행0."
+        },
+        {
+          "name": "당시KSIC판·원문근거 추출",
+          "result": "공식9/10/11차일반시행일과제조업C범위확인. 코드43검사통과. 첫과거기업우선추출실행은날짜1건에서중단,83성공/28실패checkpoint보존. 실제3원문헤더변형보완확인. 신규최종업종판정/라벨/재무복원0,Task04실행0. 원본6개보존·실제비밀값노출0."
+        },
+        {
+          "name": "날짜A교차확인후재개·45검사",
+          "result": "코엔텍T2021-03-17공식DART화면/목록일치;원본날짜수정0. 과거기업353/1768접수정상근거추출·실패0·문단1606·상장기간내1462. 사유30중10기존범주검토/20추가확인. 최종업종판정/타겟생성/재무복원0. 전체45검사통과·기존복원T불변·원본6개보존·비밀값0·Task04미실행."
+        },
+        {
+          "name": "계속진행 신규근거와전체감사",
+          "result": "ALL20기업성공·36HTTP,재시작20재사용0HTTP. 추가원문44성공/2자료없음/0실패. 업종총72T(제조5/비제조67),사유미분류30중10부실/19경쟁/1NA검토. 확인제조업1기업5T최초표40개·대차30통과·재시작5재사용. 최종50검사·전체감사통과;원본6개보존·비밀0·DBok. 모델계정매핑/전체T검증미완료,Task04실행0."
         }
       ],
       "issues": [
@@ -934,6 +1576,72 @@
           "status": "원인미확정/2사례",
           "evidence": "원본종류별표보통주수와당시KRX상장주식수2건불일치",
           "resolution": "기준일·발행/상장·증자/전환이력대조.어느자료가오류인지단정하거나기존값임의덮어쓰기금지."
+        },
+        {
+          "topic": "사건자료 관측종료일·수집 갱신범위",
+          "status": "해결/A 2026-08-01 확정 및 공식대조완료",
+          "evidence": "docs/research_decisions.md와 docs/methodology.md에 관측종료일 TODO; 진행기록상 사건자료 2026-08-01 스냅샷",
+          "resolution": "사용자A선택. source snapshot864행과 동일범위 공식12구간 비교 일치; 전체 라벨완료아님."
+        },
+        {
+          "topic": "사건사유 키워드 중첩24건의 경쟁사건 오분류 가능성",
+          "status": "공식근거 검토완료/64개T 비제조업; 라벨규칙 수정안 기록",
+          "evidence": "공식사유는 합병심사서류 미제출 후 관리종목 사유 미해소. 기존 합병 우선키워드에 걸리며 실제합병 여부는 미검증. data\\interim\\event_keyword_overlap_review_20261028_210312_935030.csv",
+          "resolution": "24개회사64개T 원문에서 SPAC 사업목적 확인. 제조업분석 밖인 관측치로 근거보존하며 정상/실제합병으로 분류하지 않음. 원자료 수집재개 가능. docs/spac_event_rule_proposal.md를 라벨생성전 적용·검증 필요."
+        },
+        {
+          "topic": "단일재무요청의 요청/반환 사업연도 불일치",
+          "status": "수집차단해소/원문대체복원검증완료;API실패이력유지",
+          "evidence": "요청2024에API응답2025,120행; source reports/monthly/task03_statement_identity_review_20261028_225439_512669.json; 3회실패·재확인일치. 실제2024최초/정정원문은이미있음.",
+          "resolution": "사용자A. 실제2024최초원문에서8재무표복원·기간열/단위/대차검증,원문대체확보1별도등록. API연도강제수정안함. source docs/original_statement_recovery.md"
+        },
+        {
+          "topic": "최초 공개 입력 통합검증",
+          "status": "업종72개T·사유검토29건·최초표5개T검증/전체미완료",
+          "evidence": "API접수3318건이최초제목후보와불일치. 최초수치/계정매핑/나머지T업종/미분류폐지사유30검증남음. 원자료요청실패나미요청과구분.",
+          "resolution": "확인제조업1기업5개T최초재무표40개·대차30검증,모델계정매핑pending. 나머지T업종판정과최초표확대·계정매핑후완료판정."
+        },
+        {
+          "topic": "출처020 및 재개 연결오류",
+          "status": "해결/재개수집완료",
+          "evidence": "정상네트워크에서새응답확보,최종실행stop_reason없음. RemoteDisconnected원문실패1도동일체크포인트재시도해소.",
+          "resolution": "실패실행로그보존,성공재사용·원본보존. 구체출처초기화시간미확정은유지."
+        },
+        {
+          "topic": "제조업 분류표 버전 정책",
+          "status": "해결/A당시적용판확정·일반시행일/C중분류범위검증",
+          "evidence": "docs/methodology.md의 분류체계·개정판·대응표 TODO. 사용자기존결정은T시점주된사업원칙이며판정표버전까지확정하지않음.",
+          "resolution": "9차/10차/11차 적용일과C범위 docs/ksic_at_T.md. 전체세세분류대응·각T사업근거는후속검증."
+        },
+        {
+          "topic": "단일공시의 식별자날짜와공시목록일자 불일치",
+          "status": "해결/공식DART화면과공시목록2021-03-17일치",
+          "evidence": "코엔텍20210316001238 식별자날짜2021-03-16,OpenDART list.json rcept_dt2021-03-17. 실제공개일교차확인전이며어느출처오류인지단정안함.",
+          "resolution": "사용자A. 제목/해당접수선택항목확인·원문해시보존. 기존T유지,식별자날짜동일성가정제거. KIND화면별도미확인."
+        },
+        {
+          "topic": "업종근거추출 기술적실패",
+          "status": "해결/1768원문재처리실패0",
+          "evidence": "첫실행111원문중83추출성공/28실패. 직접DOCUMENT하위법인헤더변형을관측해보완,실제3원문재확인. 업종최종판정과구분.",
+          "resolution": "새추출1685·검증83재사용. 기존28실패재처리해소. 문단미검출162건은추출실패와별도원문위치보완대상."
+        },
+        {
+          "topic": "사유검토표 미확정20건과T업종판정",
+          "status": "사유19건추가근거확인/1SPAC미확정·T업종검토진행중",
+          "evidence": "일반미분류30건중기존승인범주대응10건staging검토표. 나머지20NA. 원문1768중문단1606검출;판정미완료.",
+          "resolution": "전체유형목록과종료보고서/자진폐지공시대조. 검토표10부실/19경쟁/1NA. SPAC미확정과별개로3개T비제조업확인. T업종총72개검토,나머지보완계속."
+        },
+        {
+          "topic": "정기공시목록과사건맥락공시의범위차이",
+          "status": "해결/별도ALL유형수집·검증",
+          "evidence": "이전2179요청은A정기공시범위. 미확정20기업은전체유형공시2753건·추가원문44성공/2자료없음·실패0확보.",
+          "resolution": "기존A키/저장소보존,ALL키와event_context_v1별도상태. 사건공시는정답근거용으로만사용,모델특성유입금지. 검색무결과로사건없음단정금지."
+        },
+        {
+          "topic": "남은T업종과필수계정연결",
+          "status": "미완료/진행중",
+          "evidence": "과거기업상장기간내1462T중현재검토72T. 전체후보의최종업종/최초본입력/Altman계정매핑미완료. 제조업확인5T최초표는모델준비False.",
+          "resolution": "확인T만검토근거연결,미검출52원문위치보완과나머지주된사업검토,적격기업최초표확대후문헌정의에맞춘계정연결. EBIT영업이익자동대체금지."
         }
       ],
       "requirements": [
@@ -948,10 +1656,17 @@
         "표본임의축소금지·모호성즉시중단",
         "48시간고정기한없음·새기한가정금지",
         "Task03후중단·Task04실행금지",
-        "사용자최신B결정:주기준Z프라임/장부자본/위험1.23. 비상장제조업용모형의상장기업적용한계명시. 설정만반영하고후속연구작업보류."
+        "사용자최신B결정:주기준Z프라임/장부자본/위험1.23. 비상장제조업용모형의상장기업적용한계명시. 설정만반영하고후속연구작업보류.",
+        "2026-10-28 사용자 A: 사건 관측종료일 2026-08-01, 동일 기간 공식자료 완전성 검증. 최신 날짜로 임의 확대 금지.",
+        "중단원인24건은 진짜 합병사건으로 단정 금지. 사용자 선택 전 원자료 수집·라벨규칙 변경 중단. 확보상태/최초본/최종적격을 구분.",
+        "새오류1건: 요청과다른사업연도를요청연도로강제수정하거나성공승계하지않음. 선택전수집중단,성공캐시/원문/실패상태보존.",
+        "검증된원문복원은API성공으로위장하지않고실패+대체확보로분리. 파일해시/원문기간재확인,빈칸·대시·0·정정버전구분. 모델계정매핑미확정표시유지.",
+        "정기공시A와전체유형ALL의요청키·저장소·범위를구분하고성공체크포인트보존",
+        "사건후공식자료는정답근거용으로만사용하고예측특성/T당시업종확정에소급사용금지",
+        "최초표검증과Altman계정매핑·모델준비완료를구분,API성공/실패상태변경금지"
       ],
-      "next_action": "사용자 재개 지시 대기. Z프라임 필수재무·최초본·사건자료 본수집은미실행,Task04미실행. 이번 요청의설정·검증·main반영후종료."
+      "next_action": "Task03: 과거기업나머지T주된업종검토·52문단미검출보완,기존72T근거재사용. SPAC미확정사유1NA보존·생산규칙미적용명시. 확인된적격기업최초재무표확대와계정연결검증. Task04미실행."
     }
   ],
-  "next_task": "사용자 지시로 다음 연구 작업 진행하지 않음. Task03 pending(본수집미완료),Task04미실행. B설정과현재변경 main 반영만 수행."
+  "next_task": "Task03 잔여T업종·최초공시필수수치·계정연결검증 계속. 전체근거검증전Task04진입보류."
 }
