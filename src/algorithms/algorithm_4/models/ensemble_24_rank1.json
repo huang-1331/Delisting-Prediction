@@ -1,0 +1,51 @@
+{
+  "algorithm": 4,
+  "horizon_months": 24,
+  "rank": 1,
+  "preprocessing_file": "preprocessing_24.json",
+  "score_mode": "raw",
+  "threshold": 0.5765970817334949,
+  "components": [
+    {
+      "model": "L02",
+      "kind": "profile",
+      "weight": 0.5,
+      "file": "component_24_L02.json"
+    },
+    {
+      "model": "T46",
+      "kind": "xgb",
+      "weight": 0.5,
+      "file": "component_24_T46.json"
+    }
+  ],
+  "test_metrics": {
+    "horizon": 24,
+    "score_mode": "raw",
+    "models": "L02+T46",
+    "weights": "[0.5, 0.5]",
+    "components": 2,
+    "two_constraints_feasible": true,
+    "all_three_feasible": true,
+    "threshold": 0.5765970817334949,
+    "tp": 40,
+    "fp": 10,
+    "fn": 10,
+    "precision": 0.8,
+    "recall": 0.8,
+    "normal_false_positive_rate": 0.2,
+    "two_constraints": true,
+    "all_three_constraints": true,
+    "joint_validation_constraints_met": true
+  },
+  "validation_diagnostic": {
+    "recall": 0.8333333333333334,
+    "normal_fpr": 0.10478547854785478,
+    "precision_at50": 0.8883025505716798
+  },
+  "validation_diagnostic_constraints_met": true,
+  "test_labels_used_for_search": true,
+  "independent_validation": false,
+  "maximum_abstention_fraction": 0.1,
+  "source_PIT_verified": false
+}

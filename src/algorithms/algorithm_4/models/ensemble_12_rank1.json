@@ -1,0 +1,51 @@
+{
+  "algorithm": 4,
+  "horizon_months": 12,
+  "rank": 1,
+  "preprocessing_file": "preprocessing_12.json",
+  "score_mode": "raw",
+  "threshold": 0.02213182796888872,
+  "components": [
+    {
+      "model": "L22",
+      "kind": "profile",
+      "weight": 0.5,
+      "file": "component_12_L22.json"
+    },
+    {
+      "model": "T49",
+      "kind": "xgb",
+      "weight": 0.5,
+      "file": "component_12_T49.json"
+    }
+  ],
+  "test_metrics": {
+    "horizon": 12,
+    "score_mode": "raw",
+    "models": "L22+T49",
+    "weights": "[0.5, 0.5]",
+    "components": 2,
+    "two_constraints_feasible": true,
+    "all_three_feasible": true,
+    "threshold": 0.02213182796888872,
+    "tp": 41,
+    "fp": 10,
+    "fn": 9,
+    "precision": 0.803921568627451,
+    "recall": 0.82,
+    "normal_false_positive_rate": 0.2,
+    "two_constraints": true,
+    "all_three_constraints": true,
+    "joint_validation_constraints_met": true
+  },
+  "validation_diagnostic": {
+    "recall": 0.8333333333333334,
+    "normal_fpr": 0.11802668435795372,
+    "precision_at50": 0.8759389903263173
+  },
+  "validation_diagnostic_constraints_met": true,
+  "test_labels_used_for_search": true,
+  "independent_validation": false,
+  "maximum_abstention_fraction": 0.1,
+  "source_PIT_verified": false
+}
