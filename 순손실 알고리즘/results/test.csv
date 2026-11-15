@@ -1,0 +1,2 @@
+model,floor,cut,tp,fp,fn,alerts,recall,precision
+annual_loss_projection,0.8,-0.4501444339711528,61,353,13,414,0.8243243243243243,0.1473429951690821
